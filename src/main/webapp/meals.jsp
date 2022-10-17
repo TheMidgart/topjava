@@ -21,6 +21,48 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+    <form id="paramsForm" method="get" action="meals" onsubmit="removeEmpties()">
+        <dt>from Date:</dt>
+        <input type="date" name="fromDate" value="${filterParams.fromDate}">
+        <dt>to Date:</dt>
+        <input type="date" name="toDate" value="${filterParams.toDate}">
+        <dt>from Time:</dt>
+        <input type="time" name="fromTime" value="${filterParams.fromTime}">
+        <dt>to Time:</dt>
+        <input type="time" name="toTime" value="${filterParams.toTime}">
+        <br>
+        <button type="submit" value="submit">Filter</button>
+        <button type="button" onclick="clearForm()" >Cancel</button>
+    </form>
+
+    <script>
+        function removeEmpties() {
+            let form = document.getElementById("paramsForm");
+            let inputs = form.children;
+            let remove = [];
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value == "") {
+                    remove.push(inputs[i]);
+                }
+            }
+            if (remove.length == inputs.length - 1)
+                return false;
+            for (let i = 0; i < remove.length; i++)
+                form.removeChild(remove[i]);
+            return true;
+        }
+
+        function clearForm() {
+            let form = document.getElementById("paramsForm");
+            let values = form.children;
+            for (let i = 0; i <values.length ; i++) {
+                values[i].value ="";
+            }
+        }
+    </script>
+
+
+    <br>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
@@ -34,7 +76,7 @@
         </tr>
         </thead>
         <c:forEach items="${requestScope.meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
             <tr class="${meal.excess ? 'excess' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
