@@ -5,12 +5,15 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -50,6 +53,21 @@ public class InMemoryMealRepository implements MealRepository {
                 .stream()
                 .sorted(((o1, o2) -> o2.getDateTime().compareTo(o1.getDateTime())))
                 .collect(Collectors.toList());
+    }
+
+    public Collection<Meal> getAllWithUserId(Integer userId) {
+        return getAll()
+                .stream()
+                .filter(meal -> meal.getUserId() == userId)
+                .collect(Collectors.toList());
+    }
+
+    public Collection<Meal> getFilteredByDate(LocalDate fromDate, LocalDate toDate, Integer userId) {
+        return getAllWithUserId(userId).stream()
+                .filter(meal -> meal.getDateTime().toLocalDate().toEpochDay() >= fromDate.toEpochDay())
+                .filter(meal -> meal.getDateTime().toLocalDate().isBefore(toDate))
+                .collect(Collectors.toList());
+
     }
 }
 

@@ -37,17 +37,11 @@ public class MealService {
     }
 
     public Collection <Meal> getFilteredByDate(LocalDate fromDate, LocalDate toDate, Integer userId){
-        return checkNotFound(getAllWithUserId(userId).stream()
-                .filter(meal -> meal.getDateTime().toLocalDate().toEpochDay()>=fromDate.toEpochDay())
-                .filter(meal -> meal.getDateTime().toLocalDate().isBefore(toDate))
-                .collect(Collectors.toList()),"meals not found");
+        return checkNotFound(repository.getFilteredByDate(fromDate,toDate,userId),"meals not found");
     }
 
     public Collection<Meal> getAllWithUserId(Integer userId){
-        return getAll()
-                .stream()
-                .filter(meal -> meal.getUserId()==userId)
-                .collect(Collectors.toList());
+        return checkNotFound(repository.getAllWithUserId(userId),"meals not found");
     }
     public Collection<Meal> getAll() {
         return repository.getAll();
