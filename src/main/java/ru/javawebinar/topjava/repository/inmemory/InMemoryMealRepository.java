@@ -7,10 +7,12 @@ import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
@@ -31,7 +33,6 @@ public class InMemoryMealRepository implements MealRepository {
             repository.put(meal.getId(), meal);
             return meal;
         } else {
-
             return Objects.equals(meal.getUserId(), repository.get(meal.getId()).getUserId()) ?
                     repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal) : null;
         }
@@ -62,10 +63,10 @@ public class InMemoryMealRepository implements MealRepository {
                 .collect(Collectors.toList());
     }
 
-    public Collection<Meal> getFilteredByDate(LocalDate fromDate, LocalDate toDate, Integer userId) {
-        return getAllWithUserId(userId).stream()
-                .filter(meal -> meal.getDateTime().toLocalDate().toEpochDay() >= fromDate.toEpochDay())
-                .filter(meal -> meal.getDateTime().toLocalDate().isBefore(toDate))
+    public Collection<Meal> getFilteredByDate(List<Predicate<Meal>> datePredicates, Integer userId) {
+        return getAllWithUserId(userId)
+                .stream()
+                .filter(meal -> datePredicates.stream().allMatch(mealPredicate -> mealPredicate.test(meal)))
                 .collect(Collectors.toList());
 
     }

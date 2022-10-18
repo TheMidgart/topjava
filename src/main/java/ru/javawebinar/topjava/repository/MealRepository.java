@@ -4,6 +4,8 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
 
 public interface MealRepository {
     Meal save(Meal meal);
@@ -16,5 +18,5 @@ public interface MealRepository {
 
     Collection<Meal> getAllWithUserId(Integer userId);
 
-    Collection<Meal> getFilteredByDate(LocalDate fromDate, LocalDate toDate, Integer userId);
+    Collection<Meal> getFilteredByDate(List<Predicate<Meal>> datePredicates, Integer userId);
 }

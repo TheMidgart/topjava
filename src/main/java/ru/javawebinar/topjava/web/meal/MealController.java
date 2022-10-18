@@ -7,17 +7,15 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.filters.MealFilterParams;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.MealServlet;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
+import java.util.Collection;
 
 @Controller
 public class MealController {
@@ -28,64 +26,42 @@ public class MealController {
     public MealController(MealService service) {
         this.service = service;
     }
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.info("in controller post");
-        request.setCharacterEncoding("UTF-8");
-        String id = request.getParameter("id");
-        int userId = SecurityUtil.authUserId();
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")), userId);
-        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
+
+    public Collection<MealTo> getAll() {
+        return MealsUtil.getTos(service.getAllWithUserId(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
+    }
+
+    public Collection<MealTo> getAllWithParams(MealFilterParams params) {
+        return MealsUtil.filterByPredicates(service.getFilteredByDate(params.toDatePredicates(),
+                SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay(), params.toTimePredicates());
+    }
+
+    public void delete(int id) {
+        log.debug("Controller delet meal with id " + id);
+        service.delete(id, SecurityUtil.authUserId());
+    }
+
+    public void update(Meal meal) {
+        meal.setUserId(SecurityUtil.authUserId());
+        log.info("update meal " + meal);
         service.update(meal);
-        response.sendRedirect("meals");
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.info("in controller get");
-        String action = request.getParameter("action");
-        int userId = SecurityUtil.authUserId();
-
-        switch (action == null ? "all" : action) {
-            case "delete":
-                int id = getId(request);
-                log.info("Delete id={}", id);
-                service.delete(id, userId);
-                response.sendRedirect("meals");
-                break;
-            case "create":
-            case "update":
-                final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000,
-                                userId) :
-                        service.get(getId(request), userId);
-                request.setAttribute("meal", meal);
-                request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
-                break;
-            case "all":
-            default:
-                MealFilterParams params = new MealFilterParams(request.getParameter("fromDate"),
-                        request.getParameter("toDate"), request.getParameter("fromTime"),
-                        request.getParameter("toTime"));
-                if (params.hasParams()) {
-                    log.info("get filtered for current userId = " + SecurityUtil.authUserId());
-                    request.setAttribute("meals", MealsUtil.filterByPredicates(service.getAllWithUserId(SecurityUtil.authUserId()),
-                            SecurityUtil.authUserCaloriesPerDay(), params.toPredicateList()));
-                    request.setAttribute("filterParams", params);
-                } else {
-                    log.info("get All for current userId = " + SecurityUtil.authUserId());
-                    request.setAttribute("meals", MealsUtil.getTos(service.getAllWithUserId(SecurityUtil.authUserId()),
-                            SecurityUtil.authUserCaloriesPerDay()));
-                }
-                request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                break;
-        }
+    public void create(Meal meal) {
+        meal.setUserId(SecurityUtil.authUserId());
+        log.info("create meal " + meal);
+        service.create(meal);
     }
 
-    private int getId(HttpServletRequest request) {
-        String paramId = Objects.requireNonNull(request.getParameter("id"));
-        return Integer.parseInt(paramId);
+    public Meal get(int id) {
+        log.debug("Controller get meal with id " + id);
+        return service.get(id, SecurityUtil.authUserId());
+    }
+
+    public Meal toTemplateForCreate() {
+        return new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000,
+                SecurityUtil.authUserId());
+
     }
 
 }

@@ -21,6 +21,7 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+
     <form id="paramsForm" method="get" action="meals" onsubmit="removeEmpties()">
         <dt>from Date:</dt>
         <input type="date" name="fromDate" value="${filterParams.fromDate}">
@@ -32,8 +33,9 @@
         <input type="time" name="toTime" value="${filterParams.toTime}">
         <br>
         <button type="submit" value="submit">Filter</button>
-        <button type="button" onclick="clearForm()" >Cancel</button>
+        <button type="button" onclick="clearForm()">Cancel</button>
     </form>
+
 
     <script>
         function removeEmpties() {
@@ -41,7 +43,7 @@
             let inputs = form.children;
             let remove = [];
             for (let i = 0; i < inputs.length; i++) {
-                if (inputs[i].value == "") {
+                if (inputs[i].value === "") {
                     remove.push(inputs[i]);
                 }
             }
@@ -55,8 +57,8 @@
         function clearForm() {
             let form = document.getElementById("paramsForm");
             let values = form.children;
-            for (let i = 0; i <values.length ; i++) {
-                values[i].value ="";
+            for (let i = 0; i < values.length; i++) {
+                values[i].value = "";
             }
         }
     </script>
