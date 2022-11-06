@@ -184,6 +184,26 @@
 
     <profiles>
         <profile>
+            <id>datajpa</id>
+            <properties>
+                <spring.profiles.active>datajpa</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>jdbc</id>
+            <properties>
+                <spring.profiles.active>jdbc</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>jpa</id>
+            <properties>
+                <spring.profiles.active>jpa</spring.profiles.active>
+            </properties>
+        </profile>
+
+
+        <profile>
             <id>hsqldb</id>
             <dependencies>
                 <dependency>
