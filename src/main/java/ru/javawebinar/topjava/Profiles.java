@@ -7,21 +7,7 @@ public class Profiles {
             JDBC = "jdbc",
             JPA = "jpa",
             DATAJPA = "datajpa";
-
-    public static final String REPOSITORY_IMPLEMENTATION = JPA;
-
-    public static String getActiveRepoProfile() {
-        if (ClassUtils.isPresent("NamedParameterJdbcTemplate", null)) {
-            return JDBC;
-        } else if (ClassUtils.isPresent("JpaMealRepository", null)) {
-            return JPA;
-        } else if (ClassUtils.isPresent("DataJpaMealRepository", null)) {
-            return DATAJPA;
-        } else {
-            throw new IllegalStateException("Could not find active Repo Profile");
-        }
-    }
-
+    public static final String REPOSITORY_IMPLEMENTATION = JDBC;
     public static final String
             POSTGRES_DB = "postgres",
             HSQL_DB = "hsqldb";
