@@ -54,6 +54,17 @@ public class User extends AbstractNamedEntity {
     @Range(min = 10, max = 10000)
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @OrderBy("dateTime ASC")
+    /*@JoinTable(
+            name = "meals",
+            joinColumns = {@JoinColumn(name = "user_id",referencedColumnName = "id")}
+    )
+    @ElementCollection(fetch = FetchType.EAGER)*/
+//    @OrderBy("dateTime ASC")
+    private List <Meal> meals = new ArrayList<>();
+
     public User() {
     }
 
@@ -121,6 +132,18 @@ public class User extends AbstractNamedEntity {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<Meal> getMeals() {
+        return meals;
+    }
+
+    public void setMeals(List<Meal> meals) {
+        this.meals = meals;
     }
 
     @Override
