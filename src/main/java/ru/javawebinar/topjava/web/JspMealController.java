@@ -13,6 +13,7 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -71,12 +72,13 @@ public class JspMealController extends BaseController {
     public String deleteReq(@RequestParam("id") int id) {
         log.info("delete");
         service.delete(id, SecurityUtil.authUserId());
-        return "meals";
+        return "redirect:meals";
     }
 
     @PostMapping
-    public String save(HttpServletRequest request) {
+    public String save(HttpServletRequest request) throws UnsupportedEncodingException {
         log.info("post:save");
+        request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
