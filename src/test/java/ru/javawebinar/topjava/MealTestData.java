@@ -28,9 +28,9 @@ public class MealTestData {
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
 
 //    public static final LocalDateTime DATE = LocalDateTime.of(2020, Month.JANUARY, 30,0,0,0);
-    public static final String DATE = "2020-01-30T10:15:30";
-    public static final String START_TIME = "2020-01-30T00:00:00";
-    public static final String END_TIME = "2020-01-30T23:59:59";
+    public static final String DATE = "30-01-2020";
+    public static final String START_TIME = "00:00:00";
+    public static final String END_TIME = "23:59:59";
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
     }

@@ -85,7 +85,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void getBetweenRest() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_MEALS + "filter?startDate=" + DATE
-                + "&startTime=" + START_TIME + "&endDate=" + DATE + "&endTime=" + END_TIME))
+                + "&startTime=" + START_TIME + "&endDate=" + DATE ))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(MatcherFactory.usingIgnoringFieldsComparator(MealTo.class)
