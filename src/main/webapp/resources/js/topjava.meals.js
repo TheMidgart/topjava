@@ -39,3 +39,26 @@ $(function () {
         })
     );
 });
+
+function updateFilter() {
+    $.ajax({
+        type: "GET",
+        url: ctx.ajaxUrl + "filter",
+        data: $('#formFilter').serialize(),
+        success: updateTableByData
+    });
+
+}
+
+function resetFilter(){
+    let inputs = $('#formFilter input');
+    for (let i=0; i<inputs.length; i++){
+        inputs[i].value = null;
+    }
+    $.ajax({
+        type: "GET",
+        url: ctx.ajaxUrl,
+        success: updateTableByData
+    });
+
+}
