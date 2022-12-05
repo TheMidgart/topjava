@@ -11,7 +11,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,6 +56,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
+                .andDo(print())
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
@@ -92,5 +93,19 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_WITH_MEALS_MATCHER.contentJson(admin));
+    }
+
+    @Test
+    void enable() throws Exception {
+        String url = REST_URL + "enable/" + USER_ID;
+        perform(MockMvcRequestBuilders.put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"enabled\":false}"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        User fromDB = userService.get(USER_ID);
+        assertFalse(fromDB.isEnabled());
+        assertNotEquals(user.isEnabled(),fromDB.isEnabled());
     }
 }

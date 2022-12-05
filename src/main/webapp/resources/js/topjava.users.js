@@ -45,3 +45,19 @@ $(function () {
         })
     );
 });
+
+
+function setActiveUser(inputEl) {
+    let enable = inputEl.checked;
+    let id = inputEl.closest('tr').id
+    $.ajax({
+        type: "POST",
+        url: ctx.ajaxUrl + "enable/" + id,
+        dataType: 'json',
+        data: {"active": enable}
+    }).done(function (){
+        updateTable();
+        successNoty("changed");
+    });
+
+}
