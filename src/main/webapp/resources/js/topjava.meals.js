@@ -50,9 +50,9 @@ function updateFilter() {
 
 }
 
-function resetFilter(){
+function resetFilter() {
     let inputs = $('#formFilter input');
-    for (let i=0; i<inputs.length; i++){
+    for (let i = 0; i < inputs.length; i++) {
         inputs[i].value = null;
     }
     $.ajax({
@@ -60,5 +60,24 @@ function resetFilter(){
         url: ctx.ajaxUrl,
         success: updateTableByData
     });
+}
 
+function updateTable() {
+    if (hasFilter()) {
+        updateFilter();
+    } else {
+        $.get(ctx.ajaxUrl, function (data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+        });
+    }
+}
+
+function hasFilter() {
+    let inputs = $('#formFilter input');
+    for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].value !== "") {
+            return true;
+        }
+    }
+    return false;
 }
