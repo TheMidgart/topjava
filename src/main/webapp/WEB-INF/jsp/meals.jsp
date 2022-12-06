@@ -13,75 +13,72 @@
 <section>
     <div class="jumbotron">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
-
-        <form class="container" method="post" id="formFilter">
-            <div class="row">
-                <dl class="col">
-                    <dt><spring:message code="meal.startDate"/>:</dt>
-                    <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
-                </dl>
-                <dl class="col">
-                    <dt><spring:message code="meal.endDate"/>:</dt>
-                    <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
-                </dl>
-                <dl class="col">
-                    <dt><spring:message code="meal.startTime"/>:</dt>
-                    <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
-                </dl>
-                <dl class="col">
-                    <dt><spring:message code="meal.endTime"/>:</dt>
-                    <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
-                </dl>
-            </div>
-            <div class="row">
-                <button class="col-2" type="button" onclick="resetFilter()">
-                    <span class="fa fa-close"
-                    <spring:message code="meal.filter"/>
-                </button>
-                <button class="col-2" type="button" onclick="updateFilter()">
-                    <span class="fa fa-filter"
-                    <spring:message code="meal.filter"/>
-                </button>
-            </div>
-        </form>
-        <div/>
-        <hr>
-        <div class="jumbotron pt-4">
-            <div class="container">
-                <h3 class="text-center"><spring:message code="user.title"/></h3>
-                <button class="btn btn-primary" onclick="add()">
-                    <span class="fa fa-plus"></span>
-                    <spring:message code="common.add"/>
-                </button>
-                <hr>
-                <table class="table table-striped" id="mealDatatable">
-                    <thead>
-                    <tr>
-                        <th><spring:message code="meal.dateTime"/></th>
-                        <th><spring:message code="meal.description"/></th>
-                        <th><spring:message code="meal.calories"/></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <c:forEach items="${requestScope.meals}" var="meal">
-                        <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
-                        <tr id="${meal.id}" data-meal-excess="${meal.excess}">
-                            <td>
-                                    <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                                    <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                                    <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                                    ${fn:formatDateTime(meal.dateTime)}
-                            </td>
-                            <td>${meal.description}</td>
-                            <td>${meal.calories}</td>
-                            <td><a><span class="fa fa-pencil"></span></a></td>
-                            <td><a class="delete"><span class="fa fa-remove"></span></a></td>
-                        </tr>
-                    </c:forEach>
-                </table>
-            </div>
+        <div>
+            <form class="container form-horizontal border" method="post" id="formFilter">
+                <div class="row">
+                    <dl class="col">
+                        <dt><spring:message code="meal.startDate"/>:</dt>
+                        <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
+                    </dl>
+                    <dl class="col">
+                        <dt><spring:message code="meal.endDate"/>:</dt>
+                        <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
+                    </dl>
+                    <dl class="col">
+                        <dt><spring:message code="meal.startTime"/>:</dt>
+                        <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
+                    </dl>
+                    <dl class="col">
+                        <dt><spring:message code="meal.endTime"/>:</dt>
+                        <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
+                    </dl>
+                </div>
+                <div class="row justify-content-end">
+                    <button class="btn btn-danger col-2 m-2 border" type="button" onclick="resetFilter()">
+                        <span class="fa fa-close"/>
+                        <spring:message code="common.cancel"/>
+                    </button>
+                    <button class="btn btn-primary col-2  m-2 border" type="button" onclick="updateFilter()">
+                        <span class="fa fa-filter"/>
+                        <spring:message code="meal.filter"/>
+                    </button>
+                </div>
+            </form>
         </div>
+        <div class="container">
+            <button class="btn btn-primary" onclick="add()">
+                <span class="fa fa-plus"></span>
+                <spring:message code="common.add"/>
+            </button>
+            <hr>
+            <table class="table table-striped" id="mealDatatable">
+                <thead>
+                <tr>
+                    <th><spring:message code="meal.dateTime"/></th>
+                    <th><spring:message code="meal.description"/></th>
+                    <th><spring:message code="meal.calories"/></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <c:forEach items="${requestScope.meals}" var="meal">
+                    <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
+                    <tr id="${meal.id}" data-meal-excess="${meal.excess}">
+                        <td>
+                                <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
+                                <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
+                                <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
+                                ${fn:formatDateTime(meal.dateTime)}
+                        </td>
+                        <td>${meal.description}</td>
+                        <td>${meal.calories}</td>
+                        <td><a><span class="fa fa-pencil"></span></a></td>
+                        <td><a class="delete"><span class="fa fa-remove"></span></a></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </div>
+        <div/>
 </section>
 
 <div class="modal fade" tabindex="-1" id="editRow">
