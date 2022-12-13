@@ -18,20 +18,20 @@
                 <form id="filter">
                     <div class="row">
                         <div class="col-3">
-                            <label for="startDate"><spring:message code="meal.startDate"/></label>
-                            <input class="form-control" type="date" name="startDate" id="startDate">
+                            <label><spring:message code="meal.startDate"/></label>
+                            <input class="form-control" type="text" name="startDate" id="datepicker_start">
                         </div>
                         <div class="col-3">
-                            <label for="endDate"><spring:message code="meal.endDate"/></label>
-                            <input class="form-control" type="date" name="endDate" id="endDate">
+                            <label><spring:message code="meal.endDate"/></label>
+                            <input class="form-control" type="text" name="endDate" id="datepicker_end">
                         </div>
                         <div class="offset-2 col-2">
-                            <label for="startTime"><spring:message code="meal.startTime"/></label>
-                            <input class="form-control" type="time" name="startTime" id="startTime">
+                            <label><spring:message code="meal.startTime"/></label>
+                            <input class="form-control" type="text" name="startTime" id="timepicker_start">
                         </div>
                         <div class="col-2">
-                            <label for="endTime"><spring:message code="meal.endTime"/></label>
-                            <input class="form-control" type="time" name="endTime" id="endTime">
+                            <label><spring:message code="meal.endTime"/></label>
+                            <input class="form-control" type="text" name="endTime" id="timepicker_end">
                         </div>
                     </div>
                 </form>
@@ -62,21 +62,6 @@
                 <th></th>
             </tr>
             </thead>
-            <%--<c:forEach items="${requestScope.meals}" var="meal">
-                <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealTo"/>
-                <tr data-meal-excess="${meal.excess}">
-                    <td>
-                            &lt;%&ndash;${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}&ndash;%&gt;
-                            &lt;%&ndash;<%=TimeUtil.toString(meal.getDateTime())%>&ndash;%&gt;
-                            &lt;%&ndash;${fn:replace(meal.dateTime, 'T', ' ')}&ndash;%&gt;
-                            ${fn:formatDateTime(meal.dateTime)}
-                    </td>
-                    <td>${meal.description}</td>
-                    <td>${meal.calories}</td>
-                    <td><a><span class="fa fa-pencil"></span></a></td>
-                    <td><a onclick="deleteRow(${meal.id})"><span class="fa fa-remove"></span></a></td>
-                </tr>
-            </c:forEach>--%>
         </table>
     </div>
 </div>

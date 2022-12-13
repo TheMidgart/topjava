@@ -28,7 +28,10 @@ $(function () {
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime"
+                    "data": "dateTime",
+                    "render": function (data) {
+                        return moment(data).format('YYYY-MM-DD HH:mm');
+                    }
                 },
                 {
                     "data": "description"
@@ -59,4 +62,24 @@ $(function () {
             }
         })
     );
+});
+
+jQuery('#timepicker_start').datetimepicker({
+    datepicker: false,
+    format: 'H:i'
+})
+
+jQuery('#timepicker_end').datetimepicker({
+    datepicker: false,
+    format: 'H:i'
+});
+
+jQuery('#datepicker_start').datetimepicker({
+    timepicker: false,
+    format: 'Y-m-d'
+})
+
+jQuery('#datepicker_end').datetimepicker({
+    timepicker: false,
+    format: 'Y-m-d'
 });
