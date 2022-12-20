@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.TransactionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,9 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -41,7 +45,8 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class, TransactionException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
@@ -52,6 +57,7 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, true, APP_ERROR);
     }
 
+
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
@@ -60,6 +66,22 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+        return new ErrorInfo(req.getRequestURL(), errorType,
+                e instanceof TransactionException ? renderStringForValidationException(Objects.requireNonNull(getViolationException(e)))
+                        : rootCause.toString());
+    }
+
+    private static String renderStringForValidationException(ConstraintViolationException e) {
+        return e.getConstraintViolations().stream()
+                .map(fe -> String.format("[%s] %s", fe.getPropertyPath(), fe.getMessage()))
+                .collect(Collectors.joining("<br>"));
+    }
+
+    private static ConstraintViolationException getViolationException(Throwable e) {
+        Throwable nextException = e.getCause();
+        if (nextException == null) return null;
+        else if (nextException instanceof ConstraintViolationException) {
+            return (ConstraintViolationException) nextException;
+        } else return getViolationException(nextException);
     }
 }
