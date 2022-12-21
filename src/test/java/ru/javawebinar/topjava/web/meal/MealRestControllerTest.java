@@ -136,4 +136,17 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(newMeal)))
                 .andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    void createWithDuplicateDateTime() throws Exception {
+        Meal meal = meal1;
+        meal.setId(null);
+        meal.setDescription("duplicate DateTime");
+        mealService.create(meal, user.id());
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(meal))).andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
 }
