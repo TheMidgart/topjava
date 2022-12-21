@@ -3,9 +3,12 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -138,15 +141,17 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void createWithDuplicateDateTime() throws Exception {
-        Meal meal = meal1;
-        meal.setId(null);
-        meal.setDescription("duplicate DateTime");
-        mealService.create(meal, user.id());
-        perform(MockMvcRequestBuilders.post(REST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(userHttpBasic(user))
-                .content(JsonUtil.writeValue(meal))).andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+    @Transactional(propagation = Propagation.NEVER)
+    void createWithDuplicateDateTime()  {
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            Meal meal = new Meal(null, meal1.getDateTime(), "Duplicate DateTime", 2000);
+            mealService.create(meal, user.getId());
+            Meal duplicateDateTimeMeal = new Meal(null, meal1.getDateTime(), "Duplicate DateTime", 2000);
+            perform(MockMvcRequestBuilders.post(REST_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(userHttpBasic(user))
+                    .content(JsonUtil.writeValue(duplicateDateTimeMeal)))
+                    .andDo(print());
+        });
     }
 }
