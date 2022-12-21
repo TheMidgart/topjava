@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.transaction.TransactionException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,8 +21,6 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolationException;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
@@ -47,9 +45,18 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
-            HttpMessageNotReadableException.class, TransactionException.class, MethodArgumentNotValidException.class})
+            HttpMessageNotReadableException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    public ErrorInfo notValidDataError(HttpServletRequest req, Exception e) {
+        log.warn("{} at request  {}: {}", VALIDATION_ERROR, req.getRequestURL(),
+                ValidationUtil.getRootCause(e).toString());
+        return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR,
+                getErrorMessage(e));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -67,22 +74,13 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType,
-                e instanceof TransactionException ? renderStringForValidationException(Objects.requireNonNull(getViolationException(e)))
-                        : rootCause.toString());
+        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
     }
 
-    private static String renderStringForValidationException(ConstraintViolationException e) {
-        return e.getConstraintViolations().stream()
-                .map(fe -> String.format("[%s] %s", fe.getPropertyPath(), fe.getMessage()))
+    private static String getErrorMessage(Exception e){
+        BindException exception = (BindException) e;
+        return exception.getBindingResult().getFieldErrors().stream()
+                .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
                 .collect(Collectors.joining("<br>"));
-    }
-
-    private static ConstraintViolationException getViolationException(Throwable e) {
-        Throwable nextException = e.getCause();
-        if (nextException == null) return null;
-        else if (nextException instanceof ConstraintViolationException) {
-            return (ConstraintViolationException) nextException;
-        } else return getViolationException(nextException);
     }
 }
