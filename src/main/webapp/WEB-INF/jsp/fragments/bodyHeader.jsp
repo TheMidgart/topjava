@@ -5,7 +5,8 @@
 
 <nav class="navbar navbar-dark bg-dark py-0">
     <div class="container">
-        <a href="meals" class="navbar-brand"><img src="resources/images/icon-meal.png"> <spring:message code="app.title"/></a>
+        <a href="meals" class="navbar-brand"><img src="resources/images/icon-meal.png"> <spring:message
+                code="app.title"/></a>
         <sec:authorize access="isAuthenticated()">
             <form:form class="form-inline my-2" action="logout" method="post">
                 <sec:authorize access="hasRole('ADMIN')">
@@ -26,5 +27,12 @@
                 </button>
             </form:form>
         </sec:authorize>
+        <button class="btn btn-primary mr-1 " onclick="return location.href='?lang=ru'">
+            <span class="fa fa-laptop">RU</span>
+        </button>
+        <button class="btn btn-primary mr-1" onclick="return location.href='?lang=en'">
+            <span class="fa fa-laptop">EN</span>
+        </button>
     </div>
 </nav>
+
